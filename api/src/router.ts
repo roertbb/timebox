@@ -1,8 +1,8 @@
 import { Router } from "express";
-import * as timeline from "./controller/timeline";
+import timelineController from "./controllers/timeline";
 
 const router = Router({ mergeParams: true });
 
-router.get("/timelines", timeline.getAll);
+router.use("/timelines", timelineController);
 
 export default router;

@@ -10,7 +10,10 @@
     "postgres:up": "pg_ctl -D /usr/local/var/postgres start"
   },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.17.1",
+    "express-paginate": "^1.0.2",
+    "express-preconditions": "^1.0.5",
     "pg": "^7.3.0",
     "reflect-metadata": "^0.1.10",
     "typeorm": "0.2.26"
