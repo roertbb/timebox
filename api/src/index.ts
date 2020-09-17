@@ -13,7 +13,7 @@ async function startServer() {
 
   app.use(bodyParser.json());
   app.set("etag", "strong");
-  app.use(preconditions());
+  app.use(preconditions({ requiredWith: ["PUT", "PATCH"] }));
   app.use(paginate.middleware(20, 50));
 
   app.get("/", (req, res) => {

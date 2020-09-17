@@ -3,8 +3,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  UpdateDateColumn,
-  CreateDateColumn,
   ManyToOne,
 } from "typeorm";
 import { Category } from "./Category";
@@ -22,18 +20,16 @@ export class Event extends BaseEntity {
   @Column("varchar", { nullable: true })
   description: string;
 
-  @ManyToOne(() => Timeline, (timeline) => timeline.events)
+  @ManyToOne(() => Timeline, (timeline) => timeline.events, {
+    nullable: true,
+  })
   timeline: Timeline;
 
-  @ManyToOne(() => Row, (row) => row.events)
+  @ManyToOne(() => Row, (row) => row.events, { nullable: true })
   row: Row;
 
-  @ManyToOne(() => Category, (category) => category.events)
+  @ManyToOne(() => Category, (category) => category.events, {
+    nullable: true,
+  })
   category: Category;
-
-  @CreateDateColumn({ type: "timestamp" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: "timestamp" })
-  updatedAt: Date;
 }

@@ -23,7 +23,7 @@ router.get("/:timelineId", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const { id } = await create(req.body);
-    res.send({ id });
+    res.status(201).send({ id });
   } catch (error) {
     res.status(500).send({ message: "Server failed to create timeline" });
   }

@@ -3,8 +3,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  UpdateDateColumn,
-  CreateDateColumn,
   OneToMany,
 } from "typeorm";
 import { Event } from "./Event";
@@ -42,10 +40,4 @@ export class Timeline extends BaseEntity {
     onDelete: "CASCADE",
   })
   categories: Category[];
-
-  @CreateDateColumn({ type: "timestamp" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: "timestamp" })
-  updatedAt: Date;
 }

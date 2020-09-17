@@ -3,8 +3,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
   OneToMany,
 } from "typeorm";
@@ -19,17 +17,11 @@ export class Row extends BaseEntity {
   @Column("varchar", { nullable: true })
   name: string;
 
-  @ManyToOne(() => Timeline, (timeline) => timeline.rows)
+  @ManyToOne(() => Timeline, (timeline) => timeline.rows, { nullable: true })
   timeline: Timeline;
 
   @OneToMany(() => Event, (event) => event.row, {
     onDelete: "CASCADE",
   })
   events: Event[];
-
-  @CreateDateColumn({ type: "timestamp" })
-  createdAt: Date;
-
-  @UpdateDateColumn({ type: "timestamp" })
-  updatedAt: Date;
 }
