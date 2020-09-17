@@ -21,7 +21,7 @@ export async function update(id: number, params: Partial<Row>) {
   const updatedRow = Row.merge(row, params);
 
   // TODO: params validation?
-  // - required fields - name
+  // - required fields - name, timelineId
 
   return await updatedRow.save();
 }
