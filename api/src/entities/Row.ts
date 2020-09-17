@@ -17,11 +17,15 @@ export class Row extends BaseEntity {
   @Column("varchar", { nullable: true })
   name: string;
 
-  @ManyToOne(() => Timeline, (timeline) => timeline.rows, { nullable: true })
+  @Column()
+  timelineId: number;
+
+  @ManyToOne(() => Timeline, (timeline) => timeline.rows)
   timeline: Timeline;
 
   @OneToMany(() => Event, (event) => event.row, {
     onDelete: "CASCADE",
+    nullable: true,
   })
   events: Event[];
 }

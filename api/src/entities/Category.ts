@@ -25,8 +25,12 @@ export class Category extends BaseEntity {
 
   @OneToMany(() => Event, (event) => event.category, {
     onDelete: "CASCADE",
+    nullable: true,
   })
   events: Event[];
+
+  @Column()
+  timelineId: number;
 
   @ManyToOne(() => Timeline, (timeline) => timeline.categories, {
     nullable: true,

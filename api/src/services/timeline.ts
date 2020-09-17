@@ -1,6 +1,5 @@
 import { Timeline } from "./../entities/Timeline";
-
-type PaginationParams = { skip: number; take: number };
+import { PaginationParams } from "../types/utils";
 
 export async function getAll({ skip, take }: PaginationParams) {
   return await Timeline.find({
