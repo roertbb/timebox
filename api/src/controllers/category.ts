@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { getAll, getById, create, update, remove } from "../services/category";
+import { getAllByCategory } from "../services/event";
 
 const router = Router({ mergeParams: true });
 
@@ -20,11 +21,23 @@ router.get("/:categoryId", async (req, res) => {
   }
 });
 
+router.get("/:categoryId/events", async (req, res) => {
+  try {
+    const events = await getAllByCategory(+req.params.categoryId, {
+      skip: req.skip,
+      take: +req.query.limit,
+    });
+    res.send(events);
+  } catch (error) {
+    res.status(404).send({ message: "Category not found" });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     const { id } = await create({
       ...req.body,
-      categoryId: +req.params.categoryId,
+      timelineId: +req.params.timelineId,
     });
     res.status(201).send({ id });
   } catch (error) {

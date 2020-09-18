@@ -20,6 +20,12 @@ export class Event extends BaseEntity {
   @Column("varchar", { nullable: true })
   description: string;
 
+  @Column({ type: "timestamp", nullable: true })
+  startsAt: string;
+
+  @Column({ type: "timestamp", nullable: true })
+  endsAt: string;
+
   @Column()
   timelineId: number;
 
@@ -28,13 +34,13 @@ export class Event extends BaseEntity {
   })
   timeline: Timeline;
 
-  @Column()
+  @Column({ nullable: true })
   rowId: number;
 
   @ManyToOne(() => Row, (row) => row.events, { nullable: true })
   row: Row;
 
-  @Column()
+  @Column({ nullable: true })
   categoryId: number;
 
   @ManyToOne(() => Category, (category) => category.events, {

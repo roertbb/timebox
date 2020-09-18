@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { getAllByRow } from "../services/event";
 import { getAll, getById, create, update, remove } from "../services/row";
 
 const router = Router({ mergeParams: true });
@@ -15,6 +16,18 @@ router.get("/:rowId", async (req, res) => {
   try {
     const row = await getById(+req.params.rowId);
     res.send(row);
+  } catch (error) {
+    res.status(404).send({ message: "Row not found" });
+  }
+});
+
+router.get("/:rowId/events", async (req, res) => {
+  try {
+    const events = await getAllByRow(+req.params.rowId, {
+      skip: req.skip,
+      take: +req.query.limit,
+    });
+    res.send(events);
   } catch (error) {
     res.status(404).send({ message: "Row not found" });
   }
