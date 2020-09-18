@@ -20,11 +20,12 @@ export class Row extends BaseEntity {
   @Column()
   timelineId: number;
 
-  @ManyToOne(() => Timeline, (timeline) => timeline.rows)
+  @ManyToOne(() => Timeline, (timeline) => timeline.rows, {
+    onDelete: "CASCADE",
+  })
   timeline: Timeline;
 
   @OneToMany(() => Event, (event) => event.row, {
-    onDelete: "CASCADE",
     nullable: true,
   })
   events: Event[];

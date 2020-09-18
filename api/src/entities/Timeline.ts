@@ -27,18 +27,14 @@ export class Timeline extends BaseEntity {
   endsAt: string;
 
   @OneToMany(() => Event, (event) => event.timeline, {
-    onDelete: "CASCADE",
     nullable: true,
   })
   events: Event[];
 
-  @OneToMany(() => Row, (row) => row.timeline, {
-    onDelete: "CASCADE",
-  })
+  @OneToMany(() => Row, (row) => row.timeline)
   rows: Row[];
 
   @OneToMany(() => Category, (category) => category.timeline, {
-    onDelete: "CASCADE",
     nullable: true,
   })
   categories: Category[];

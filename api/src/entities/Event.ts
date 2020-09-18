@@ -31,13 +31,17 @@ export class Event extends BaseEntity {
 
   @ManyToOne(() => Timeline, (timeline) => timeline.events, {
     nullable: true,
+    onDelete: "CASCADE",
   })
   timeline: Timeline;
 
   @Column({ nullable: true })
   rowId: number;
 
-  @ManyToOne(() => Row, (row) => row.events, { nullable: true })
+  @ManyToOne(() => Row, (row) => row.events, {
+    nullable: true,
+    onDelete: "CASCADE",
+  })
   row: Row;
 
   @Column({ nullable: true })
@@ -45,6 +49,7 @@ export class Event extends BaseEntity {
 
   @ManyToOne(() => Category, (category) => category.events, {
     nullable: true,
+    onDelete: "CASCADE",
   })
   category: Category;
 }

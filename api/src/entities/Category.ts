@@ -24,7 +24,6 @@ export class Category extends BaseEntity {
   color: string;
 
   @OneToMany(() => Event, (event) => event.category, {
-    onDelete: "CASCADE",
     nullable: true,
   })
   events: Event[];
@@ -33,7 +32,7 @@ export class Category extends BaseEntity {
   timelineId: number;
 
   @ManyToOne(() => Timeline, (timeline) => timeline.categories, {
-    nullable: true,
+    onDelete: "CASCADE",
   })
   timeline: Timeline;
 }
