@@ -66,6 +66,7 @@ export class Event extends BaseEntity {
 
   @BeforeUpdate()
   async validate() {
+    console.log("validate", this);
     await validateOrReject(this);
   }
 }

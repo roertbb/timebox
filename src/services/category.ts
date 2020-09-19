@@ -61,3 +61,26 @@ export async function update(id: number, params: Partial<Category>) {
 export async function remove(id: number) {
   return await getRepository(Category).delete(id);
 }
+
+export async function transferByTimelineId(
+  categoryId: number,
+  timelineId: number
+) {
+  try {
+    await getConnection().transaction(async (tm) => {
+      await tm.query(
+        `update categories c set "timelineId" = $1 where c."id" = $2`,
+        [timelineId, categoryId]
+      );
+      await tm.query(
+        `update events e set "timelineId" = $1, "rowId" = NULL where e."categoryId" = $2`,
+        [timelineId, categoryId]
+      );
+    });
+  } catch (error) {
+    throw {
+      message: "Failed to transfer category to different timeline",
+      statusCode: ErrorCode.BadRequest,
+    };
+  }
+}
