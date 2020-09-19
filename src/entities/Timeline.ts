@@ -7,7 +7,7 @@ import {
   OneToMany,
   BeforeUpdate,
 } from "typeorm";
-import * as pick from "lodash.pick";
+import pick = require("lodash.pick");
 import { Event } from "./Event";
 import { Row } from "./Row";
 import { Category } from "./Category";

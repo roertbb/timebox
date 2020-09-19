@@ -1,7 +1,14 @@
 import { ErrorCode } from "./../types/utils";
 import { Router } from "express";
 import { parseParams } from "../entities/Timeline";
-import { getAll, getById, create, update, remove } from "../services/timeline";
+import {
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+  put,
+} from "../services/timeline";
 
 const router = Router({ mergeParams: true });
 
@@ -37,7 +44,7 @@ router.post("/", async (req, res) => {
 router.put("/:timelineId", async (req, res) => {
   try {
     const params = parseParams(req.body);
-    await update(+req.params.timelineId, params);
+    await put(+req.params.timelineId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ code, message }) {
     res.status(code).send({ message });

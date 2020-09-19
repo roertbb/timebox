@@ -5,21 +5,26 @@ import {
   BaseEntity,
   OneToMany,
   ManyToOne,
+  BeforeUpdate,
 } from "typeorm";
+import pick = require("lodash.pick");
 import { Event } from "./Event";
 import { Timeline } from "./Timeline";
+import { IsDefined, validateOrReject } from "class-validator";
 
 @Entity({ name: "categories" })
 export class Category extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @IsDefined()
   @Column("varchar", { nullable: true })
   name: string;
 
   @Column("varchar", { nullable: true })
   description: string;
 
+  @IsDefined()
   @Column("varchar", { nullable: true })
   color: string;
 
@@ -28,6 +33,7 @@ export class Category extends BaseEntity {
   })
   events: Event[];
 
+  @IsDefined()
   @Column()
   timelineId: number;
 
@@ -35,4 +41,13 @@ export class Category extends BaseEntity {
     onDelete: "CASCADE",
   })
   timeline: Timeline;
+
+  @BeforeUpdate()
+  async validate() {
+    await validateOrReject(this);
+  }
+}
+
+export function parseParams(body: any) {
+  return pick(body, ["name", "description", "color", "timelineId"]);
 }

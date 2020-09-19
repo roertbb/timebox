@@ -1,6 +1,8 @@
 import { Router } from "express";
+import { ErrorCode } from "./../types/utils";
 import { getAll, getById, create, update, remove } from "../services/category";
 import { getAllByCategory } from "../services/event";
+import { parseParams } from "../entities/Category";
 
 const router = Router({ mergeParams: true });
 
@@ -16,11 +18,12 @@ router.get("/:categoryId", async (req, res) => {
   try {
     const category = await getById(+req.params.categoryId);
     res.send(category);
-  } catch (error) {
-    res.status(404).send({ message: "Category not found" });
+  } catch ({ code, message }) {
+    res.status(code).send({ message });
   }
 });
 
+// TODO:
 router.get("/:categoryId/events", async (req, res) => {
   try {
     const events = await getAllByCategory(+req.params.categoryId, {
@@ -34,51 +37,51 @@ router.get("/:categoryId/events", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  const timelineId = +req.params.timelineId;
   try {
     const { id } = await create({
       ...req.body,
-      timelineId: +req.params.timelineId,
+      timelineId,
     });
-    res.status(201).send({ id });
+    res.location(`/api/timelines/${timelineId}/categories/${id}`);
+    res.status(ErrorCode.Created).send({ id });
   } catch (error) {
-    res.status(500).send({ message: "Server failed to create category" });
+    res
+      .status(ErrorCode.ServerError)
+      .send({ message: "Server failed to create timeline" });
   }
 });
 
 router.put("/:categoryId", async (req, res) => {
-  // TODO: validate/pick params - req.body
-
+  const timelineId = +req.params.timelineId;
   try {
-    await update(+req.params.categoryId, {
-      timelineId: +req.params.timelineId,
-      ...req.body,
-    });
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).send({ message: "Server failed to update category" });
+    const params = parseParams({ timelineId, ...req.body });
+    await update(+req.params.categoryId, params);
+    res.status(ErrorCode.NoContent).send();
+  } catch ({ code, message }) {
+    res.status(code).send({ message });
   }
 });
 
 router.patch("/:categoryId", async (req, res) => {
-  // TODO: validate/pick params - req.body
-
+  const timelineId = +req.params.timelineId;
   try {
-    await update(+req.params.categoryId, {
-      timelineId: +req.params.timelineId,
-      ...req.body,
-    });
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).send({ message: "Server failed to update category" });
+    const params = parseParams({ timelineId, ...req.body });
+    await update(+req.params.categoryId, params);
+    res.status(ErrorCode.NoContent).send();
+  } catch ({ code, message }) {
+    res.status(code).send({ message });
   }
 });
 
 router.delete("/:categoryId", async (req, res) => {
   try {
     await remove(+req.params.categoryId);
-    res.status(204).send();
+    res.status(ErrorCode.NoContent).send();
   } catch (error) {
-    res.status(500).send({ message: "Server failed to delete category" });
+    res
+      .status(ErrorCode.ServerError)
+      .send({ message: "Server failed to delete category" });
   }
 });
 
