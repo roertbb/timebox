@@ -1,8 +1,6 @@
 import { Event } from "./../entities/Event";
 import { PaginationParams } from "../types/utils";
-import { getConnection } from "typeorm";
-
-const getEventRepo = () => getConnection().getRepository(Event);
+import { getRepository } from "typeorm";
 
 export async function getAll({ skip, take }: PaginationParams) {
   return await Event.find({
@@ -15,7 +13,7 @@ export async function getAllByCategory(
   categoryId: number,
   { skip, take }: PaginationParams
 ) {
-  return await getEventRepo().find({
+  return await getRepository(Event).find({
     skip,
     take,
     where: {
@@ -28,7 +26,7 @@ export async function getAllByRow(
   rowId: number,
   { skip, take }: PaginationParams
 ) {
-  return await getEventRepo().find({
+  return await getRepository(Event).find({
     skip,
     take,
     where: {

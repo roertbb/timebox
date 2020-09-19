@@ -1,4 +1,6 @@
+import { ErrorCode } from "./../types/utils";
 import { Router } from "express";
+import { parseParams } from "../entities/Timeline";
 import { getAll, getById, create, update, remove } from "../services/timeline";
 
 const router = Router({ mergeParams: true });
@@ -15,48 +17,51 @@ router.get("/:timelineId", async (req, res) => {
   try {
     const timeline = await getById(+req.params.timelineId);
     res.send(timeline);
-  } catch (error) {
-    res.status(404).send({ message: "Timeline not found" });
+  } catch ({ code, message }) {
+    res.status(code).send({ message });
   }
 });
 
 router.post("/", async (req, res) => {
   try {
     const { id } = await create(req.body);
-    res.status(201).send({ id });
+    res.location(`/api/timelines/${id}`);
+    res.status(ErrorCode.Created).send({ id });
   } catch (error) {
-    res.status(500).send({ message: "Server failed to create timeline" });
+    res
+      .status(ErrorCode.ServerError)
+      .send({ message: "Server failed to create timeline" });
   }
 });
 
 router.put("/:timelineId", async (req, res) => {
-  // TODO: validate/pick params - req.body
-
   try {
-    await update(+req.params.timelineId, req.body);
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).send({ message: "Server failed to update timeline" });
+    const params = parseParams(req.body);
+    await update(+req.params.timelineId, params);
+    res.status(ErrorCode.NoContent).send();
+  } catch ({ code, message }) {
+    res.status(code).send({ message });
   }
 });
 
 router.patch("/:timelineId", async (req, res) => {
-  // TODO: validate/pick params - req.body
-
   try {
-    await update(+req.params.timelineId, req.body);
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).send({ message: "Server failed to update timeline" });
+    const params = parseParams(req.body);
+    await update(+req.params.timelineId, params);
+    res.status(ErrorCode.NoContent).send();
+  } catch ({ code, message }) {
+    res.status(code).send({ message });
   }
 });
 
 router.delete("/:timelineId", async (req, res) => {
   try {
     await remove(+req.params.timelineId);
-    res.status(204).send();
+    res.status(ErrorCode.NoContent).send();
   } catch (error) {
-    res.status(500).send({ message: "Server failed to delete timeline" });
+    res
+      .status(ErrorCode.ServerError)
+      .send({ message: "Server failed to delete timeline" });
   }
 });
 
