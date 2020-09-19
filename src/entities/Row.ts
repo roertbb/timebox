@@ -5,7 +5,10 @@ import {
   BaseEntity,
   ManyToOne,
   OneToMany,
+  BeforeUpdate,
 } from "typeorm";
+import { IsDefined, validateOrReject } from "class-validator";
+import pick = require("lodash.pick");
 import { Event } from "./Event";
 import { Timeline } from "./Timeline";
 
@@ -14,9 +17,11 @@ export class Row extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @IsDefined()
   @Column("varchar", { nullable: true })
   name: string;
 
+  @IsDefined()
   @Column()
   timelineId: number;
 
@@ -29,4 +34,13 @@ export class Row extends BaseEntity {
     nullable: true,
   })
   events: Event[];
+
+  @BeforeUpdate()
+  async validate() {
+    await validateOrReject(this);
+  }
+}
+
+export function parseParams(body: any) {
+  return pick(body, ["name", "timelineId"]);
 }

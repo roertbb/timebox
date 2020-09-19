@@ -1,31 +1,60 @@
+import { ErrorCode } from "./../types/utils";
+import { getConnection, getRepository } from "typeorm";
 import { Row } from "./../entities/Row";
 import { PaginationParams } from "../types/utils";
 
 export async function getAll({ skip, take }: PaginationParams) {
-  return await Row.find({
-    skip,
-    take,
-  });
+  return await getRepository(Row).find({ skip, take });
 }
 
-export async function getById(id: number) {
-  return await Row.findOneOrFail(id);
+export async function getById(id: number, rowRepository = getRepository(Row)) {
+  try {
+    return await rowRepository.findOneOrFail(id);
+  } catch (error) {
+    throw {
+      message: "Couldn't find row with given id",
+      code: ErrorCode.NotFound,
+    };
+  }
 }
 
 export async function create(params: Partial<Row>) {
-  return await Row.create(params).save();
+  return await getRepository(Row).create(params).save();
+}
+
+export async function put(id: number, params: Partial<Row>) {
+  try {
+    await getConnection().transaction(async (tm) => {
+      const rowRepository = tm.getRepository(Row);
+      await getById(id, rowRepository);
+
+      return await rowRepository.save({ id, ...params });
+    });
+  } catch (error) {
+    throw {
+      message: "Row data is invalid or missing required fields",
+      code: ErrorCode.BadRequest,
+    };
+  }
 }
 
 export async function update(id: number, params: Partial<Row>) {
-  const row = await Row.findOneOrFail(id);
-  const updatedRow = Row.merge(row, params);
+  try {
+    await getConnection().transaction(async (tm) => {
+      const rowRepository = tm.getRepository(Row);
+      const row = await getById(id, rowRepository);
 
-  // TODO: params validation?
-  // - required fields - name, timelineId
-
-  return await updatedRow.save();
+      const updatedRow = rowRepository.merge(row, params);
+      return await rowRepository.save(updatedRow);
+    });
+  } catch (error) {
+    throw {
+      message: "Row data is invalid or missing required fields",
+      code: ErrorCode.BadRequest,
+    };
+  }
 }
 
 export async function remove(id: number) {
-  return await Row.delete(id);
+  return await getRepository(Row).delete(id);
 }

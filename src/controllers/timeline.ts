@@ -31,7 +31,7 @@ router.get("/:timelineId", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const { id } = await create(req.body);
+    const { id } = await create({});
     res.location(`/api/timelines/${id}`);
     res.status(ErrorCode.Created).send({ id });
   } catch (error) {

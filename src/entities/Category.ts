@@ -7,10 +7,10 @@ import {
   ManyToOne,
   BeforeUpdate,
 } from "typeorm";
+import { IsDefined, validateOrReject } from "class-validator";
 import pick = require("lodash.pick");
 import { Event } from "./Event";
 import { Timeline } from "./Timeline";
-import { IsDefined, validateOrReject } from "class-validator";
 
 @Entity({ name: "categories" })
 export class Category extends BaseEntity {

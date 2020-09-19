@@ -40,7 +40,6 @@ router.post("/", async (req, res) => {
   const timelineId = +req.params.timelineId;
   try {
     const { id } = await create({
-      ...req.body,
       timelineId,
     });
     res.location(`/api/timelines/${timelineId}/categories/${id}`);
@@ -55,7 +54,7 @@ router.post("/", async (req, res) => {
 router.put("/:categoryId", async (req, res) => {
   const timelineId = +req.params.timelineId;
   try {
-    const params = parseParams({ timelineId, ...req.body });
+    const params = parseParams({ ...req.body, timelineId });
     await update(+req.params.categoryId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ code, message }) {
@@ -66,7 +65,7 @@ router.put("/:categoryId", async (req, res) => {
 router.patch("/:categoryId", async (req, res) => {
   const timelineId = +req.params.timelineId;
   try {
-    const params = parseParams({ timelineId, ...req.body });
+    const params = parseParams({ ...req.body, timelineId });
     await update(+req.params.categoryId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ code, message }) {
