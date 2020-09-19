@@ -1,5 +1,14 @@
+import { ErrorCode } from "./../types/utils";
 import { Router } from "express";
-import { getAll, getById, create, update, remove } from "../services/event";
+import {
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+  put,
+} from "../services/event";
+import { parseParams } from "../entities/Event";
 
 const router = Router({ mergeParams: true });
 
@@ -15,57 +24,55 @@ router.get("/:eventId", async (req, res) => {
   try {
     const event = await getById(+req.params.eventId);
     res.send(event);
-  } catch (error) {
-    res.status(404).send({ message: "Event not found" });
+  } catch ({ code, message }) {
+    res.status(code).send({ message });
   }
 });
 
 router.post("/", async (req, res) => {
+  const timelineId = +req.params.timelineId;
   try {
-    const { id } = await create({
-      ...req.body,
-      timelineId: +req.params.timelineId,
-    });
-    res.status(201).send({ id });
+    const { id } = await create({ timelineId });
+    res.location(`/api/timelines/${timelineId}/events/${id}`);
+    res.status(ErrorCode.Created).send({ id });
   } catch (error) {
-    res.status(500).send({ message: "Server failed to create event" });
+    res
+      .status(ErrorCode.ServerError)
+      .send({ message: "Server failed to create event" });
   }
 });
 
 router.put("/:eventId", async (req, res) => {
-  // TODO: validate/pick params - req.body
+  const timelineId = +req.params.timelineId;
 
   try {
-    await update(+req.params.eventId, {
-      timelineId: +req.params.timelineId,
-      ...req.body,
-    });
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).send({ message: "Server failed to update event" });
+    const params = parseParams({ ...req.body, timelineId });
+    await put(+req.params.eventId, params);
+    res.status(ErrorCode.NoContent).send();
+  } catch ({ code, message }) {
+    res.status(code).send({ message: "Server failed to update event" });
   }
 });
 
 router.patch("/:eventId", async (req, res) => {
-  // TODO: validate/pick params - req.body
-
+  const timelineId = +req.params.timelineId;
   try {
-    await update(+req.params.eventId, {
-      timelineId: +req.params.timelineId,
-      ...req.body,
-    });
-    res.status(204).send();
-  } catch (error) {
-    res.status(500).send({ message: "Server failed to update event" });
+    const params = parseParams({ ...req.body, timelineId });
+    await update(+req.params.eventId, params);
+    res.status(ErrorCode.NoContent).send();
+  } catch ({ code, message }) {
+    res.status(code).send({ message });
   }
 });
 
 router.delete("/:eventId", async (req, res) => {
   try {
     await remove(+req.params.eventId);
-    res.status(204).send();
+    res.status(ErrorCode.NoContent).send();
   } catch (error) {
-    res.status(500).send({ message: "Server failed to delete event" });
+    res
+      .status(ErrorCode.ServerError)
+      .send({ message: "Server failed to delete event" });
   }
 });
 

@@ -1,6 +1,13 @@
 import { Router } from "express";
 import { ErrorCode } from "./../types/utils";
-import { getAll, getById, create, update, remove } from "../services/category";
+import {
+  getAll,
+  getById,
+  create,
+  update,
+  remove,
+  put,
+} from "../services/category";
 import { getAllByCategory } from "../services/event";
 import { parseParams } from "../entities/Category";
 
@@ -23,7 +30,6 @@ router.get("/:categoryId", async (req, res) => {
   }
 });
 
-// TODO:
 router.get("/:categoryId/events", async (req, res) => {
   try {
     const events = await getAllByCategory(+req.params.categoryId, {
@@ -32,7 +38,7 @@ router.get("/:categoryId/events", async (req, res) => {
     });
     res.send(events);
   } catch (error) {
-    res.status(404).send({ message: "Category not found" });
+    res.status(ErrorCode.NotFound).send({ message: "Category not found" });
   }
 });
 
@@ -55,7 +61,7 @@ router.put("/:categoryId", async (req, res) => {
   const timelineId = +req.params.timelineId;
   try {
     const params = parseParams({ ...req.body, timelineId });
-    await update(+req.params.categoryId, params);
+    await put(+req.params.categoryId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ code, message }) {
     res.status(code).send({ message });

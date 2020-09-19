@@ -4,7 +4,7 @@
 
 # GET /api/timelines
 # list timelines
-GET http://localhost:3000/api/timelines HTTP/1.1
+GET http://localhost:3000/api/timelines?limit=5&page=1 HTTP/1.1
 
 ###
 
@@ -88,7 +88,6 @@ If-Match: "23-X/QKbRlT/jK1gHDAlSrhurywLFo"
 
 {
     "name": "Robert",
-    "timelineId": 1
 }
 
 ###
@@ -149,7 +148,6 @@ If-Match: "45-GDIyu3Bp6uckgqbn9BNC2cpBA2I"
     "name": "File Search",
     "description": "lorem ipsum...",
     "color": "#d9ead3",
-    "timelineId": 1
 }
 
 ###
@@ -203,7 +201,6 @@ If-Match: "45-GDIyu3Bp6uckgqbn9BNC2cpBA2I"
     "description": "lorem ipsum...",
     "startsAt": "2020-06-02T00:00:00.000Z",
     "endsAt": "2020-06-04T00:00:00.000Z",
-    "timelineId": 1,
     "categoryId": 1,
     "rowId": 1
 }

@@ -4,28 +4,39 @@ import {
   Column,
   BaseEntity,
   ManyToOne,
+  BeforeUpdate,
 } from "typeorm";
+import { IsDate, IsDefined, Validate, validateOrReject } from "class-validator";
+import pick = require("lodash.pick");
 import { Category } from "./Category";
 import { Row } from "./Row";
 import { Timeline } from "./Timeline";
+import { IsBeforeConstraint } from "./../validators/isBeforeConstraint";
 
 @Entity({ name: "events" })
 export class Event extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @IsDefined()
   @Column("varchar", { nullable: true })
   name: string;
 
   @Column("varchar", { nullable: true })
   description: string;
 
+  @IsDefined()
+  @IsDate()
+  @Validate(IsBeforeConstraint, ["endsAt"])
   @Column({ type: "timestamp", nullable: true })
-  startsAt: string;
+  startsAt: Date;
 
+  @IsDefined()
+  @IsDate()
   @Column({ type: "timestamp", nullable: true })
-  endsAt: string;
+  endsAt: Date;
 
+  @IsDefined()
   @Column()
   timelineId: number;
 
@@ -52,4 +63,25 @@ export class Event extends BaseEntity {
     onDelete: "CASCADE",
   })
   category: Category;
+
+  @BeforeUpdate()
+  async validate() {
+    await validateOrReject(this);
+  }
+}
+
+export function parseParams(body: any) {
+  const fields = pick(body, [
+    "name",
+    "description",
+    "startsAt",
+    "endsAt",
+    "timelineId",
+    "rowId",
+    "categoryId",
+  ]);
+  if (fields.startsAt) fields.startsAt = new Date(fields.startsAt);
+  if (fields.endsAt) fields.endsAt = new Date(fields.endsAt);
+
+  return fields;
 }

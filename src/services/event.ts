@@ -1,12 +1,24 @@
+import { ErrorCode } from "./../types/utils";
 import { Event } from "./../entities/Event";
 import { PaginationParams } from "../types/utils";
-import { getRepository } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 
 export async function getAll({ skip, take }: PaginationParams) {
-  return await Event.find({
-    skip,
-    take,
-  });
+  return await getRepository(Event).find({ skip, take });
+}
+
+export async function getById(
+  id: number,
+  eventRepository = getRepository(Event)
+) {
+  try {
+    return await eventRepository.findOneOrFail(id);
+  } catch (error) {
+    throw {
+      message: "Couldn't find event with given id",
+      code: ErrorCode.NotFound,
+    };
+  }
 }
 
 export async function getAllByCategory(
@@ -35,25 +47,43 @@ export async function getAllByRow(
   });
 }
 
-export async function getById(id: number) {
-  return await Event.findOneOrFail(id);
+export async function create(params: Partial<Event>) {
+  return await getRepository(Event).create(params).save();
 }
 
-export async function create(params: Partial<Event>) {
-  return await Event.create(params).save();
+export async function put(id: number, params: Partial<Event>) {
+  try {
+    await getConnection().transaction(async (tm) => {
+      const eventRepository = tm.getRepository(Event);
+      await getById(id, eventRepository);
+
+      return await eventRepository.save({ id, ...params });
+    });
+  } catch (error) {
+    throw {
+      message: "Event data is invalid or missing required fields",
+      code: ErrorCode.BadRequest,
+    };
+  }
 }
 
 export async function update(id: number, params: Partial<Event>) {
-  const event = await Event.findOneOrFail(id);
-  const updatedEvent = Event.merge(event, params);
+  try {
+    await getConnection().transaction(async (tm) => {
+      const eventRepository = tm.getRepository(Event);
+      const event = await getById(id, eventRepository);
 
-  // TODO: params validation?
-  // - required fields - name, timelineId
-  // - startsAt before endsAt
-
-  return await updatedEvent.save();
+      const updatedEvent = eventRepository.merge(event, params);
+      return await eventRepository.save(updatedEvent);
+    });
+  } catch (error) {
+    throw {
+      message: "Event data is invalid or missing required fields",
+      code: ErrorCode.BadRequest,
+    };
+  }
 }
 
 export async function remove(id: number) {
-  return await Event.delete(id);
+  return await getRepository(Event).delete(id);
 }
