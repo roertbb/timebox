@@ -144,12 +144,12 @@ POST http://localhost:3000/api/timelines/1/categories HTTP/1.1
 # update information about category with {cid} id
 PUT http://localhost:3000/api/timelines/1/categories/1 HTTP/1.1
 Content-Type: application/json
-If-Match: "45-GDIyu3Bp6uckgqbn9BNC2cpBA2I"
+If-Match: "43-qtD7wix6HBgP2q3nCIkkDPnHJ9c"
 
 {
     "name": "File Search",
     "description": "lorem ipsum...",
-    "color": "#d9ead3",
+    "color": "#d9ead3"
 }
 
 ###
@@ -197,7 +197,7 @@ POST http://localhost:3000/api/timelines/1/events HTTP/1.1
 # update information about event with {eid} id
 PUT http://localhost:3000/api/timelines/1/events/1 HTTP/1.1
 Content-Type: application/json
-If-Match: "45-GDIyu3Bp6uckgqbn9BNC2cpBA2I"
+If-Match: "73-DYiA2RPnRSwEXB98c1SqFjW4LpQ"
 
 {
     "name": "File Search API",

@@ -3,16 +3,20 @@ import { Event } from "./../entities/Event";
 import { PaginationParams } from "../types/utils";
 import { getConnection, getRepository } from "typeorm";
 
-export async function getAll({ skip, take }: PaginationParams) {
-  return await getRepository(Event).find({ skip, take });
+export async function getAll(
+  timelineId: number,
+  { skip, take }: PaginationParams
+) {
+  return await getRepository(Event).find({ skip, take, where: { timelineId } });
 }
 
 export async function getById(
   id: number,
+  timelineId: number,
   eventRepository = getRepository(Event)
 ) {
   try {
-    return await eventRepository.findOneOrFail(id);
+    return await eventRepository.findOneOrFail(id, { where: { timelineId } });
   } catch (error) {
     throw {
       message: "Couldn't find event with given id",
@@ -55,7 +59,7 @@ export async function put(id: number, params: Partial<Event>) {
   try {
     await getConnection().transaction(async (tm) => {
       const eventRepository = tm.getRepository(Event);
-      await getById(id, eventRepository);
+      await getById(id, params.timelineId, eventRepository);
       await eventRepository.save({ id, ...params });
       const event = await eventRepository.findOneOrFail(id, {
         relations: ["row", "category"],
@@ -90,7 +94,7 @@ export async function update(id: number, params: Partial<Event>) {
   try {
     await getConnection().transaction(async (tm) => {
       const eventRepository = tm.getRepository(Event);
-      const event = await getById(id, eventRepository);
+      const event = await getById(id, params.timelineId, eventRepository);
       await eventRepository.save(eventRepository.merge(event, params));
       const savedEvent = await eventRepository.findOneOrFail(id, {
         relations: ["row", "category"],
@@ -127,6 +131,6 @@ export async function update(id: number, params: Partial<Event>) {
   }
 }
 
-export async function remove(id: number) {
-  return await getRepository(Event).delete(id);
+export async function remove(id: number, timelineId: number) {
+  return await getRepository(Event).delete({ id, timelineId });
 }

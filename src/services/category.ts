@@ -3,16 +3,26 @@ import { getConnection, getRepository } from "typeorm";
 import { Category } from "./../entities/Category";
 import { PaginationParams } from "../types/utils";
 
-export async function getAll({ skip, take }: PaginationParams) {
-  return await getRepository(Category).find({ skip, take });
+export async function getAll(
+  timelineId: number,
+  { skip, take }: PaginationParams
+) {
+  return await getRepository(Category).find({
+    skip,
+    take,
+    where: { timelineId },
+  });
 }
 
 export async function getById(
   id: number,
+  timelineId: number,
   categoryRepository = getRepository(Category)
 ) {
   try {
-    return await categoryRepository.findOneOrFail(id);
+    return await categoryRepository.findOneOrFail(id, {
+      where: { timelineId },
+    });
   } catch (error) {
     throw {
       message: "Couldn't find category with given id",
@@ -29,7 +39,7 @@ export async function put(id: number, params: Partial<Category>) {
   try {
     await getConnection().transaction(async (tm) => {
       const categoryRepository = tm.getRepository(Category);
-      await getById(id, categoryRepository);
+      await getById(id, params.timelineId, categoryRepository);
 
       return await categoryRepository.save({ id, ...params });
     });
@@ -45,7 +55,7 @@ export async function update(id: number, params: Partial<Category>) {
   try {
     await getConnection().transaction(async (tm) => {
       const categoryRepository = tm.getRepository(Category);
-      const category = await getById(id, categoryRepository);
+      const category = await getById(id, params.timelineId, categoryRepository);
 
       const updatedCategory = categoryRepository.merge(category, params);
       return await categoryRepository.save(updatedCategory);
@@ -58,8 +68,8 @@ export async function update(id: number, params: Partial<Category>) {
   }
 }
 
-export async function remove(id: number) {
-  return await getRepository(Category).delete(id);
+export async function remove(id: number, timelineId: number) {
+  return await getRepository(Category).delete({ id, timelineId });
 }
 
 export async function transferByTimelineId(

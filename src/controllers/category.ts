@@ -14,7 +14,7 @@ import { parseParams } from "../entities/Category";
 const router = Router({ mergeParams: true });
 
 router.get("/", async (req, res) => {
-  const categories = await getAll({
+  const categories = await getAll(+req.params.timelineId, {
     skip: req.skip,
     take: +req.query.limit,
   });
@@ -22,8 +22,9 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:categoryId", async (req, res) => {
+  const { categoryId, timelineId } = req.params;
   try {
-    const category = await getById(+req.params.categoryId);
+    const category = await getById(+categoryId, +timelineId);
     res.send(category);
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -58,10 +59,10 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:categoryId", async (req, res) => {
-  const timelineId = +req.params.timelineId;
+  const { categoryId, timelineId } = req.params;
   try {
-    const params = parseParams({ ...req.body, timelineId });
-    await put(+req.params.categoryId, params);
+    const params = parseParams({ ...req.body, timelineId: +timelineId });
+    await put(+categoryId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -69,10 +70,10 @@ router.put("/:categoryId", async (req, res) => {
 });
 
 router.patch("/:categoryId", async (req, res) => {
-  const timelineId = +req.params.timelineId;
+  const { categoryId, timelineId } = req.params;
   try {
-    const params = parseParams({ ...req.body, timelineId });
-    await update(+req.params.categoryId, params);
+    const params = parseParams({ ...req.body, timelineId: +timelineId });
+    await update(+categoryId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -80,8 +81,9 @@ router.patch("/:categoryId", async (req, res) => {
 });
 
 router.delete("/:categoryId", async (req, res) => {
+  const { categoryId, timelineId } = req.params;
   try {
-    await remove(+req.params.categoryId);
+    await remove(+categoryId, +timelineId);
     res.status(ErrorCode.NoContent).send();
   } catch (error) {
     res

@@ -3,13 +3,20 @@ import { getConnection, getRepository } from "typeorm";
 import { Row } from "./../entities/Row";
 import { PaginationParams } from "../types/utils";
 
-export async function getAll({ skip, take }: PaginationParams) {
-  return await getRepository(Row).find({ skip, take });
+export async function getAll(
+  timelineId: number,
+  { skip, take }: PaginationParams
+) {
+  return await getRepository(Row).find({ skip, take, where: { timelineId } });
 }
 
-export async function getById(id: number, rowRepository = getRepository(Row)) {
+export async function getById(
+  id: number,
+  timelineId: number,
+  rowRepository = getRepository(Row)
+) {
   try {
-    return await rowRepository.findOneOrFail(id);
+    return await rowRepository.findOneOrFail(id, { where: { timelineId } });
   } catch (error) {
     throw {
       message: "Couldn't find row with given id",
@@ -26,7 +33,7 @@ export async function put(id: number, params: Partial<Row>) {
   try {
     await getConnection().transaction(async (tm) => {
       const rowRepository = tm.getRepository(Row);
-      await getById(id, rowRepository);
+      await getById(id, params.timelineId, rowRepository);
 
       return await rowRepository.save({ id, ...params });
     });
@@ -42,7 +49,7 @@ export async function update(id: number, params: Partial<Row>) {
   try {
     await getConnection().transaction(async (tm) => {
       const rowRepository = tm.getRepository(Row);
-      const row = await getById(id, rowRepository);
+      const row = await getById(id, params.timelineId, rowRepository);
 
       const updatedRow = rowRepository.merge(row, params);
       return await rowRepository.save(updatedRow);
@@ -55,6 +62,6 @@ export async function update(id: number, params: Partial<Row>) {
   }
 }
 
-export async function remove(id: number) {
-  return await getRepository(Row).delete(id);
+export async function remove(id: number, timelineId: number) {
+  return await getRepository(Row).delete({ id, timelineId });
 }

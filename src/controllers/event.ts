@@ -13,7 +13,7 @@ import { parseParams } from "../entities/Event";
 const router = Router({ mergeParams: true });
 
 router.get("/", async (req, res) => {
-  const events = await getAll({
+  const events = await getAll(+req.params.timelineId, {
     skip: req.skip,
     take: +req.query.limit,
   });
@@ -21,8 +21,9 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:eventId", async (req, res) => {
+  const { eventId, timelineId } = req.params;
   try {
-    const event = await getById(+req.params.eventId);
+    const event = await getById(+eventId, +timelineId);
     res.send(event);
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -43,11 +44,10 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:eventId", async (req, res) => {
-  const timelineId = +req.params.timelineId;
-
+  const { eventId, timelineId } = req.params;
   try {
-    const params = parseParams({ ...req.body, timelineId });
-    await put(+req.params.eventId, params);
+    const params = parseParams({ ...req.body, timelineId: +timelineId });
+    await put(+eventId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -55,10 +55,10 @@ router.put("/:eventId", async (req, res) => {
 });
 
 router.patch("/:eventId", async (req, res) => {
-  const timelineId = +req.params.timelineId;
+  const { eventId, timelineId } = req.params;
   try {
-    const params = parseParams({ ...req.body, timelineId });
-    await update(+req.params.eventId, params);
+    const params = parseParams({ ...req.body, timelineId: +timelineId });
+    await update(+eventId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -66,8 +66,9 @@ router.patch("/:eventId", async (req, res) => {
 });
 
 router.delete("/:eventId", async (req, res) => {
+  const { eventId, timelineId } = req.params;
   try {
-    await remove(+req.params.eventId);
+    await remove(+eventId, +timelineId);
     res.status(ErrorCode.NoContent).send();
   } catch (error) {
     res

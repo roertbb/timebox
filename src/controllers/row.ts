@@ -7,7 +7,7 @@ import { parseParams } from "../entities/Row";
 const router = Router({ mergeParams: true });
 
 router.get("/", async (req, res) => {
-  const rows = await getAll({
+  const rows = await getAll(+req.params.timelineId, {
     skip: req.skip,
     take: +req.query.limit,
   });
@@ -15,8 +15,9 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/:rowId", async (req, res) => {
+  const { rowId, timelineId } = req.params;
   try {
-    const row = await getById(+req.params.rowId);
+    const row = await getById(+rowId, +timelineId);
     res.send(row);
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -51,10 +52,10 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:rowId", async (req, res) => {
-  const timelineId = +req.params.timelineId;
+  const { rowId, timelineId } = req.params;
   try {
-    const params = parseParams({ ...req.body, timelineId });
-    await put(+req.params.rowId, params);
+    const params = parseParams({ ...req.body, timelineId: +timelineId });
+    await put(+rowId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -62,10 +63,10 @@ router.put("/:rowId", async (req, res) => {
 });
 
 router.patch("/:rowId", async (req, res) => {
-  const timelineId = +req.params.timelineId;
+  const { rowId, timelineId } = req.params;
   try {
-    const params = parseParams({ ...req.body, timelineId });
-    await update(+req.params.rowId, params);
+    const params = parseParams({ ...req.body, timelineId: +timelineId });
+    await update(+rowId, params);
     res.status(ErrorCode.NoContent).send();
   } catch ({ statusCode, message }) {
     res.status(statusCode).send({ message });
@@ -73,8 +74,9 @@ router.patch("/:rowId", async (req, res) => {
 });
 
 router.delete("/:rowId", async (req, res) => {
+  const { rowId, timelineId } = req.params;
   try {
-    await remove(+req.params.rowId);
+    await remove(+rowId, +timelineId);
     res.status(ErrorCode.NoContent).send();
   } catch (error) {
     res
