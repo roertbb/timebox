@@ -13,7 +13,7 @@ export async function getById(id: number, rowRepository = getRepository(Row)) {
   } catch (error) {
     throw {
       message: "Couldn't find row with given id",
-      code: ErrorCode.NotFound,
+      statusCode: ErrorCode.NotFound,
     };
   }
 }
@@ -33,7 +33,7 @@ export async function put(id: number, params: Partial<Row>) {
   } catch (error) {
     throw {
       message: "Row data is invalid or missing required fields",
-      code: ErrorCode.BadRequest,
+      statusCode: ErrorCode.BadRequest,
     };
   }
 }
@@ -50,7 +50,7 @@ export async function update(id: number, params: Partial<Row>) {
   } catch (error) {
     throw {
       message: "Row data is invalid or missing required fields",
-      code: ErrorCode.BadRequest,
+      statusCode: ErrorCode.BadRequest,
     };
   }
 }

@@ -24,8 +24,8 @@ router.get("/:timelineId", async (req, res) => {
   try {
     const timeline = await getById(+req.params.timelineId);
     res.send(timeline);
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 
@@ -46,8 +46,8 @@ router.put("/:timelineId", async (req, res) => {
     const params = parseParams(req.body);
     await put(+req.params.timelineId, params);
     res.status(ErrorCode.NoContent).send();
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 
@@ -56,8 +56,8 @@ router.patch("/:timelineId", async (req, res) => {
     const params = parseParams(req.body);
     await update(+req.params.timelineId, params);
     res.status(ErrorCode.NoContent).send();
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 

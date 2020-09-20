@@ -25,8 +25,8 @@ router.get("/:categoryId", async (req, res) => {
   try {
     const category = await getById(+req.params.categoryId);
     res.send(category);
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 
@@ -63,8 +63,8 @@ router.put("/:categoryId", async (req, res) => {
     const params = parseParams({ ...req.body, timelineId });
     await put(+req.params.categoryId, params);
     res.status(ErrorCode.NoContent).send();
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 
@@ -74,8 +74,8 @@ router.patch("/:categoryId", async (req, res) => {
     const params = parseParams({ ...req.body, timelineId });
     await update(+req.params.categoryId, params);
     res.status(ErrorCode.NoContent).send();
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 

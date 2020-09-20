@@ -6,6 +6,7 @@ import {
   OneToMany,
   ManyToOne,
   BeforeUpdate,
+  JoinColumn,
 } from "typeorm";
 import { IsDefined, validateOrReject } from "class-validator";
 import pick = require("lodash.pick");
@@ -40,6 +41,7 @@ export class Category extends BaseEntity {
   @ManyToOne(() => Timeline, (timeline) => timeline.categories, {
     onDelete: "CASCADE",
   })
+  @JoinColumn()
   timeline: Timeline;
 
   @BeforeUpdate()

@@ -18,8 +18,8 @@ router.get("/:rowId", async (req, res) => {
   try {
     const row = await getById(+req.params.rowId);
     res.send(row);
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 
@@ -56,8 +56,8 @@ router.put("/:rowId", async (req, res) => {
     const params = parseParams({ ...req.body, timelineId });
     await put(+req.params.rowId, params);
     res.status(ErrorCode.NoContent).send();
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 
@@ -67,8 +67,8 @@ router.patch("/:rowId", async (req, res) => {
     const params = parseParams({ ...req.body, timelineId });
     await update(+req.params.rowId, params);
     res.status(ErrorCode.NoContent).send();
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 

@@ -24,8 +24,8 @@ router.get("/:eventId", async (req, res) => {
   try {
     const event = await getById(+req.params.eventId);
     res.send(event);
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 
@@ -49,8 +49,8 @@ router.put("/:eventId", async (req, res) => {
     const params = parseParams({ ...req.body, timelineId });
     await put(+req.params.eventId, params);
     res.status(ErrorCode.NoContent).send();
-  } catch ({ code, message }) {
-    res.status(code).send({ message: "Server failed to update event" });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 
@@ -60,8 +60,8 @@ router.patch("/:eventId", async (req, res) => {
     const params = parseParams({ ...req.body, timelineId });
     await update(+req.params.eventId, params);
     res.status(ErrorCode.NoContent).send();
-  } catch ({ code, message }) {
-    res.status(code).send({ message });
+  } catch ({ statusCode, message }) {
+    res.status(statusCode).send({ message });
   }
 });
 

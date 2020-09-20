@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
     "dev:tsc": "tsc -w",
     "dev:watch": "nodemon dist/index.js",
-    "postgres:up": "pg_ctl -D /usr/local/var/postgres start"
+    "postgres:up": "pg_ctl -D /usr/local/var/postgres start",
+    "build": "tsc"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
@@ -27,7 +27,6 @@
     "@types/lodash.pick": "^4.4.6",
     "@types/node": "^8.0.29",
     "nodemon": "^2.0.4",
-    "ts-node": "3.3.0",
     "typescript": "3.3.3333"
   }
 }

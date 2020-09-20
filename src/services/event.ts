@@ -16,7 +16,7 @@ export async function getById(
   } catch (error) {
     throw {
       message: "Couldn't find event with given id",
-      code: ErrorCode.NotFound,
+      statusCode: ErrorCode.NotFound,
     };
   }
 }
@@ -56,13 +56,32 @@ export async function put(id: number, params: Partial<Event>) {
     await getConnection().transaction(async (tm) => {
       const eventRepository = tm.getRepository(Event);
       await getById(id, eventRepository);
+      await eventRepository.save({ id, ...params });
+      const event = await eventRepository.findOneOrFail(id, {
+        relations: ["row", "category"],
+      });
 
-      return await eventRepository.save({ id, ...params });
+      if (event.category && event.category.timelineId !== event.timelineId) {
+        throw {
+          message: "Event and category does not belong to the same timeline",
+          statusCode: ErrorCode.BadRequest,
+        };
+      }
+
+      if (event.row && event.row.timelineId !== event.timelineId) {
+        throw {
+          message: "Event and row does not belong to the same timeline",
+          statusCode: ErrorCode.BadRequest,
+        };
+      }
+
+      return event;
     });
   } catch (error) {
+    if (error.statusCode) throw error;
     throw {
       message: "Event data is invalid or missing required fields",
-      code: ErrorCode.BadRequest,
+      statusCode: ErrorCode.BadRequest,
     };
   }
 }
@@ -72,14 +91,38 @@ export async function update(id: number, params: Partial<Event>) {
     await getConnection().transaction(async (tm) => {
       const eventRepository = tm.getRepository(Event);
       const event = await getById(id, eventRepository);
+      await eventRepository.save(eventRepository.merge(event, params));
+      const savedEvent = await eventRepository.findOneOrFail(id, {
+        relations: ["row", "category"],
+      });
 
-      const updatedEvent = eventRepository.merge(event, params);
-      return await eventRepository.save(updatedEvent);
+      if (
+        savedEvent.category &&
+        savedEvent.category.timelineId !== savedEvent.timelineId
+      ) {
+        throw {
+          message: "Event and category does not belong to the same timeline",
+          statusCode: ErrorCode.BadRequest,
+        };
+      }
+
+      if (
+        savedEvent.row &&
+        savedEvent.row.timelineId !== savedEvent.timelineId
+      ) {
+        throw {
+          message: "Event and row does not belong to the same timeline",
+          statusCode: ErrorCode.BadRequest,
+        };
+      }
+
+      return savedEvent;
     });
   } catch (error) {
+    if (error.statusCode) throw error;
     throw {
       message: "Event data is invalid or missing required fields",
-      code: ErrorCode.BadRequest,
+      statusCode: ErrorCode.BadRequest,
     };
   }
 }

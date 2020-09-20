@@ -5,6 +5,7 @@ import {
   BaseEntity,
   ManyToOne,
   BeforeUpdate,
+  JoinColumn,
 } from "typeorm";
 import { IsDate, IsDefined, Validate, validateOrReject } from "class-validator";
 import pick = require("lodash.pick");
@@ -53,6 +54,7 @@ export class Event extends BaseEntity {
     nullable: true,
     onDelete: "CASCADE",
   })
+  @JoinColumn()
   row: Row;
 
   @Column({ nullable: true })
@@ -62,6 +64,7 @@ export class Event extends BaseEntity {
     nullable: true,
     onDelete: "CASCADE",
   })
+  @JoinColumn()
   category: Category;
 
   @BeforeUpdate()

@@ -16,7 +16,7 @@ export async function getById(
   } catch (error) {
     throw {
       message: "Couldn't find timeline with given id",
-      code: ErrorCode.NotFound,
+      statusCode: ErrorCode.NotFound,
     };
   }
 }
@@ -36,7 +36,7 @@ export async function put(id: number, params: Partial<Timeline>) {
   } catch (error) {
     throw {
       message: "Timeline data is invalid or missing required fields",
-      code: ErrorCode.BadRequest,
+      statusCode: ErrorCode.BadRequest,
     };
   }
 }
@@ -53,7 +53,7 @@ export async function update(id: number, params: Partial<Timeline>) {
   } catch (error) {
     throw {
       message: "Timeline data is invalid or missing required fields",
-      code: ErrorCode.BadRequest,
+      statusCode: ErrorCode.BadRequest,
     };
   }
 }
